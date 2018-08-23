@@ -4,52 +4,47 @@
 # Python3.5
 # @Author  : cunxi.wang
 
-import time
 import socket
-from pip._vendor.distlib.compat import raw_input
-from socketlean.entity import Client
-from socketlean.communication import CommunicationThread
 from socketlean.utils import ConstantUtils
 
-clientArray = []
 
-def sendmessage(_Socket):
-    for i in range(1, 5):
-        _Socket.send("hello...".encode("utf-8"))
-        time.sleep(1)
+class ClientSocket:
+    _ip = ""
+    _port = ""
+    _socket = ""
 
-def handlerexecutereceivemessage(data, socket):  # receive message callback
-    pass
+    def __init__(self, ip, port):
+        self._ip = ip
+        self._port = port
 
-def createclient(ip, port, buffersize):
-    client = Client.ClientEntity()
-    client.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create client socket
-    client.socket.connect((ip, port))
-    try:
-        client.recvthread = CommunicationThread.RecvMsgThread(client.socket, buffersize,
-                                                              handlerexecutereceivemessage)  # create receiver message thread
-        client.recvthread.start()
-    except:
-        print("start receiver message thread fail")
-    clientArray.append(client)
+    def startsocket(self):
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create client socket
+        self._socket.connect((self._ip, self._port))
+
+    def senddata(self, data):
+        self._socket.send(data.encode("utf-8"))
+
+    def receivedata(self, handlerexecutereceivedata):
+        _data = self._socket.recv(ConstantUtils.BUFFER_SIZE)
+        print("receive data:", _data)
+        if handlerexecutereceivedata:
+            handlerexecutereceivedata(_data)
+
+    def handlerexecutereceivedata(self, data):   # Receive message callback function
+        pass
+
+    def stopsocket(self):
+        self._socket.close()
+
 
 # 主入口
 def main():
-    inputstr = raw_input('please input number:')
-    while True:
-        if inputstr.isdigit():
-            break
-            inputstr = raw_input('please input number:')
-    createclientcount = int(inputstr)
-    # 初始化创建客户端
-    while createclientcount > 0:
-        createclient(ConstantUtils.IP, ConstantUtils.PORT, ConstantUtils.BUFFER_SIZE)
-        createclientcount -= 1
-        time.sleep(1)
-    for client in clientArray:
-        sendmessage(client.socket)
-        client.recvthread.stop()
-        client.socket.close()
+    clientsocket = ClientSocket(ConstantUtils.IP, ConstantUtils.PORT);
+    clientsocket.startsocket()
+    clientsocket.senddata("hello...")
+    clientsocket.receivedata(clientsocket.handlerexecutereceivedata)
+    clientsocket.stopsocket()
+
 
 if __name__ == '__main__':
     main()
