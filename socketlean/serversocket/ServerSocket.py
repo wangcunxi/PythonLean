@@ -6,6 +6,9 @@
 
 import socket
 import time
+
+from socketlean.entity.AskNews import AskNews
+from socketlean.entity.News import News
 from socketlean.utils import ConstantUtils
 
 
@@ -43,10 +46,25 @@ class ServerSocket:
             handlerexecutereceivedata(client, _data)
 
     def handlerexecutereceivedata(self, client, data):   # Receive message callback function
-        self.senddata(client, data)
+        _news = News(0)
+        _news.__dict__ = eval(data.decode(encoding='utf-8'))
+        _news.print()
+        _asknews=AskNews()
+
+        if _news._newstype == 1:
+            _asknews._status = True
+            _asknews._message="登录成功"
+        elif _news._newstype == 2:
+            _asknews._status = True
+            _asknews._message="心跳成功"
+        else:
+            _asknews._message="操作失败"
+        self.senddata(client, _asknews)
 
     def senddata(self, client, data):
-        client.send(data.upper())
+        _data = str(data.__dict__)
+        print("json obj to string data:", _data)
+        client.send(_data.encode("UTF-8"))
 
     def stopserversocket(self):
         self._runaccept = False
