@@ -9,6 +9,7 @@ import time
 
 from socketlean.entity.AskNews import AskNews
 from socketlean.entity.News import News
+from socketlean.serversocket.ReceiveThread import ReceiveThread
 from socketlean.utils import ConstantUtils
 
 
@@ -18,12 +19,13 @@ class ServerSocket:
     _max_block_size = 1
     _serversocket = ""
     _runaccept = True
-    _clientlist = []
+    _replydelaytime = 0;
 
-    def __init__(self, ip, port, max_block_size):
+    def __init__(self, ip, port, max_block_size,replydelaytime):
         self._ip = ip
         self._port = port
         self._max_block_size = max_block_size
+        self._replydelaytime = replydelaytime
 
     def startserversocket(self):
         ## 创建socket对象
@@ -34,18 +36,13 @@ class ServerSocket:
         print("server socket started")
         while self._runaccept:
             print("waiting for client connection")
-            _client, _addr = self._serversocket.accept()  # listen client link
-            self.receivedata(_client, self.handlerexecutereceivedata)
+            _client, _addr = self._serversocket.accept()                            # listen client link
+            receiveThread = ReceiveThread(_client, self.handlerexecutereceivedata)
+            receiveThread.start()
             print(_client, " client is connected")
-            self._clientlist.append(_client)
-
-    def receivedata(self, client, handlerexecutereceivedata):
-        _data = client.recv(ConstantUtils.BUFFER_SIZE)
-        print("receive data:", _data)
-        if handlerexecutereceivedata:
-            handlerexecutereceivedata(client, _data)
 
     def handlerexecutereceivedata(self, client, data):   # Receive message callback function
+        time.sleep(self._replydelaytime)
         _news = News(0)
         _news.__dict__ = eval(data.decode(encoding='utf-8'))
         _news.print()
@@ -72,7 +69,7 @@ class ServerSocket:
 
 # 主入口
 def main():
-    serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT, ConstantUtils.MAX_CONNECT)
+    serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT, ConstantUtils.MAX_CONNECT,ConstantUtils.DELAYTIME)
     serverSocket.startserversocket()
     time.sleep(600)
     serverSocket.stopserversocket()
