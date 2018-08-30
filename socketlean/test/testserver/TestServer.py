@@ -3,17 +3,21 @@
 # @Time    : 2018/8/30 8:36
 # @Author  : cunxi.wang
 
-import time
-from socketlean.serversocket.ServerSocket import ServerSocket
-from socketlean.utils import ConstantUtils
-
+import sys
+import os
 
 # 主入口
 def main():
+    projectroot = os.path.abspath('..')
+    print(projectroot)
+    sys.path.append(projectroot)
+    print(sys.path)
+
+    from socketlean.serversocket.ServerSocket import ServerSocket
+    from socketlean.utils import ConstantUtils
+
     serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT, ConstantUtils.MAX_CONNECT,ConstantUtils.DELAYTIME)
     serverSocket.startserversocket()
-    # time.sleep(600)
-    # serverSocket.stopserversocket()
 
 if __name__ == '__main__':
     main()
