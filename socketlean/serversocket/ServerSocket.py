@@ -21,6 +21,7 @@ class ServerSocket(threading.Thread):
     _replydelaytime = ConstantUtils.DELAYTIME
     _serversocket = ""
     _runaccept = True
+    _clients = []
 
     def __init__(self, ip, port):
         threading.Thread.__init__(self)
@@ -42,6 +43,7 @@ class ServerSocket(threading.Thread):
             print("waiting for client connection")
             client, addr = self._serversocket.accept()
             self.processclient(client)
+            self.processconnectedclient(client, 1)
 
     def processclient(self, client):
         receiveThread = ReceiveThread(client, self.processclientrequest)
@@ -60,6 +62,7 @@ class ServerSocket(threading.Thread):
         else:
             _asknews._message = "option fail"
         self.processclientresponse(client, _asknews)
+        self.processconnectedclient(client, 2)
 
     def processclientresponse(self, client, data):
         _data = str(data.__dict__)
@@ -67,9 +70,17 @@ class ServerSocket(threading.Thread):
         time.sleep(self._replydelaytime)
         client.send(_data.encode("UTF-8"))
 
+    def processconnectedclient(self, client, type):
+        if type == 1:
+            self._clients.append(client)
+        elif type == 2:
+            self._clients.remove(client)
+        print("current connected client lenght->", self._clients.__len__())
+
     def close(self):
         self._runaccept = False
         self._serversocket.close()
+
 
 def main():
     serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT)

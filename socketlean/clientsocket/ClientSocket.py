@@ -46,18 +46,18 @@ class ClientSocket(threading.Thread):
         _log = Log()  # 初始化日志文件
         _log.notetime(1)  # 记录开始时间
         self.login(self._username, self._password)
-        self.receivedata(self.processserverrequest)
+        self.receivedata(self.processserverresponse)
         _log.notetime(2)  # 记录接收到数据时间
         _log.print()
-        self.stopsocket()
+        self.close()
 
-    def receivedata(self, processserverrequest):
+    def receivedata(self, processserverresponse):
         _data = self._socket.recv(ConstantUtils.BUFFER_SIZE)
         print("receive data:", _data)
-        if processserverrequest:
-            processserverrequest(_data)
+        if processserverresponse:
+            processserverresponse(_data)
 
-    def processserverrequest(self, data):  # Receive message callback function
+    def processserverresponse(self, data):  # Receive message callback function
         _asknews = AskNews()
         _asknews.__dict__ = eval(data.decode(encoding='utf-8'))
         _asknews.print()
@@ -78,7 +78,7 @@ class ClientSocket(threading.Thread):
         print("json obj to string data:", _data)
         self._socket.send(_data.encode("UTF-8"))
 
-    def stopsocket(self):
+    def close(self):
         self._socket.close()
 
 
