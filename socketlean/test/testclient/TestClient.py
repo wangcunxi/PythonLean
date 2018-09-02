@@ -4,26 +4,31 @@
 # @Author  : cunxi.wang
 import sys
 import os
+
+from socketlean.clientsocket.ClientSocket import ClientSocket
+from socketlean.entity.AskNews import AskNews
+from socketlean.entity.Log import Log
+
 projectroot = os.path.abspath('..')
 print(projectroot)
 sys.path.append(projectroot)
 print(sys.path)
 
 from pip._vendor.distlib.compat import raw_input
-from socketlean.test.thread.ClientThread import ClientThread
 from socketlean.utils import ConstantUtils
 
 def main():
     inputstr = raw_input('please input create client count:')
     while True:
-        print(inputstr.isdigit())
+        print('input is number->',inputstr.isdigit())
         if inputstr.isdigit():
             break
         inputstr = raw_input('please input number type:')
     initclientcount = int(inputstr)
     while initclientcount > 0:
-        thread = ClientThread('wangcunxi'+str(initclientcount),'wangcunxipassword'+str(initclientcount),ConstantUtils.IP,ConstantUtils.PORT)
-        thread.start()
+        _clientsocket = ClientSocket(ConstantUtils.IP,ConstantUtils.PORT,'wangcunxi'+str(initclientcount),'wangcunxipassword'+str(initclientcount))
+        _clientsocket.start()
         initclientcount-=1
+
 if __name__ == '__main__':
     main()

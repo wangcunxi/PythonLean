@@ -5,6 +5,7 @@
 # @Author  : cunxi.wang
 
 import socket
+import threading
 import time
 
 from socketlean.entity.AskNews import AskNews
@@ -13,66 +14,70 @@ from socketlean.serversocket.ReceiveThread import ReceiveThread
 from socketlean.utils import ConstantUtils
 
 
-class ServerSocket:
+class ServerSocket(threading.Thread):
     _ip = ""
     _port = ""
-    _max_block_size = 1
+    _max_block_size = ConstantUtils.MAX_CONNECT
+    _replydelaytime = ConstantUtils.DELAYTIME
     _serversocket = ""
     _runaccept = True
-    _replydelaytime = 0;
 
-    def __init__(self, ip, port, max_block_size,replydelaytime):
+    def __init__(self, ip, port):
+        threading.Thread.__init__(self)
         self._ip = ip
         self._port = port
-        self._max_block_size = max_block_size
-        self._replydelaytime = replydelaytime
 
-    def startserversocket(self):
-        ## 创建socket对象
+    def run(self):
+        self.listenclient()
+        self.accept()
+
+    def listenclient(self):
         self._serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._serversocket.bind((self._ip, self._port))
-        ## 设置最大连接数,超过后排队
         self._serversocket.listen(self._max_block_size)
         print("server socket started")
+
+    def accept(self):
         while self._runaccept:
             print("waiting for client connection")
-            _client, _addr = self._serversocket.accept()                            # listen client link
-            receiveThread = ReceiveThread(_client, self.handlerexecutereceivedata)
-            receiveThread.start()
-            print(_client, " client is connected")
+            client, addr = self._serversocket.accept()
+            self.processclient(client)
 
-    def handlerexecutereceivedata(self, client, data):   # Receive message callback function
-        time.sleep(self._replydelaytime)
+    def processclient(self, client):
+        receiveThread = ReceiveThread(client, self.processclientrequest)
+        receiveThread.start()
+        print(client, " client is connected")
+
+    def processclientrequest(self, client, data):
         _news = News(0)
         _news.__dict__ = eval(data.decode(encoding='utf-8'))
         _news.print()
-        _asknews=AskNews()
+        _asknews = AskNews()
 
         if _news._newstype == 1:
             _asknews._status = True
-            _asknews._message="登录成功"
-        elif _news._newstype == 2:
-            _asknews._status = True
-            _asknews._message="心跳成功"
+            _asknews._message = "login success"
         else:
-            _asknews._message="操作失败"
-        self.senddata(client, _asknews)
+            _asknews._message = "option fail"
+        self.processclientresponse(client, _asknews)
 
-    def senddata(self, client, data):
+    def processclientresponse(self, client, data):
         _data = str(data.__dict__)
         print("json obj to string data:", _data)
+        time.sleep(self._replydelaytime)
         client.send(_data.encode("UTF-8"))
 
-    def stopserversocket(self):
+    def close(self):
         self._runaccept = False
         self._serversocket.close()
 
-# 主入口
 def main():
-    serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT, ConstantUtils.MAX_CONNECT,ConstantUtils.DELAYTIME)
-    serverSocket.startserversocket()
-    time.sleep(600)
-    serverSocket.stopserversocket()
+    serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT)
+    serverSocket._max_block_size = ConstantUtils.MAX_CONNECT
+    serverSocket.start()
+    time.sleep(20)
+    serverSocket.close()
+
 
 if __name__ == '__main__':
     main()

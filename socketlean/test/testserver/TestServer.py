@@ -15,8 +15,8 @@ from socketlean.utils import ConstantUtils
 
 # 主入口
 def main():
-    serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT, ConstantUtils.MAX_CONNECT,ConstantUtils.DELAYTIME)
-    serverSocket.startserversocket()
+    serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT)
+    serverSocket.start()
 
 if __name__ == '__main__':
     main()

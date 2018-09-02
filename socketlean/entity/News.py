@@ -23,10 +23,3 @@ class Login():
         self._password=password
     def print(self):
         print(self._username,self._password)
-
-class HeartBeat():
-    time=""
-    def __init__(self):
-        self.time = int(time.time())
-    def print(self):
-        print(self.time)
