@@ -14,17 +14,16 @@ class Log:
     def __init__(self):
         pass
 
-    def notetime(self, type):  # 1:记录开始时间  2:记录结束时间
-        t = int(time.time())  # 秒级时间戳
+    def notetime(self, type):   # 1:note begin time  2:note end time
+        t = int(time.time())    # 秒级时间戳
         if (type == 1):
-            self._begintime = t  # 记录开始时间
+            self._begintime = t
         elif (type == 2):
-            self._endtime = t  # 记录结束时间
+            self._endtime = t
         else:
-            print("记录时间类型不存在")
+            print("note time type no exit")
 
     def print(self):
         begintime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self._begintime))
         endtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self._endtime))
-        print('begin time->', begintime, '   end time->', endtime, '   time tifference->',
-              (self._endtime - self._begintime))
+        print("begin time->%s    end time->%s    time tifference->%ss" %(begintime ,endtime,(self._endtime - self._begintime)))

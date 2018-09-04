@@ -10,7 +10,7 @@ import time
 
 from socketlean.entity.AskNews import AskNews
 from socketlean.entity.News import News
-from socketlean.serversocket.ReceiveThread import ReceiveThread
+from socketlean.serversocket.ThreadPool import ThreadPool
 from socketlean.utils import ConstantUtils
 
 
@@ -22,11 +22,13 @@ class ServerSocket(threading.Thread):
     _serversocket = ""
     _runaccept = True
     _clients = []
+    _threadpool = ""
 
     def __init__(self, ip, port):
         threading.Thread.__init__(self)
-        self._ip = ip
-        self._port = port
+        self._ip    = ip
+        self._port  = port
+        self._threadpool = ThreadPool()
 
     def run(self):
         self.listenclient()
@@ -46,11 +48,15 @@ class ServerSocket(threading.Thread):
             self.processconnectedclient(client, 1)
 
     def processclient(self, client):
-        receiveThread = ReceiveThread(client, self.processclientrequest)
-        receiveThread.start()
+        thread = self._threadpool.popthread()
+        th = thread(target=self.processclientrequest, args=(client,))
+        th.start()
         print(client, " client is connected")
 
-    def processclientrequest(self, client, data):
+    def processclientrequest(self, client):
+        data = client.recv(ConstantUtils.BUFFER_SIZE)
+        print("receive data:", data)
+
         _news = News(0)
         _news.__dict__ = eval(data.decode(encoding='utf-8'))
         _news.print()
@@ -63,6 +69,7 @@ class ServerSocket(threading.Thread):
             _asknews._message = "option fail"
         self.processclientresponse(client, _asknews)
         self.processconnectedclient(client, 2)
+        self._threadpool.pushthread()
 
     def processclientresponse(self, client, data):
         _data = str(data.__dict__)
@@ -81,14 +88,12 @@ class ServerSocket(threading.Thread):
         self._runaccept = False
         self._serversocket.close()
 
-
 def main():
     serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT)
     serverSocket._max_block_size = ConstantUtils.MAX_CONNECT
     serverSocket.start()
     time.sleep(20)
     serverSocket.close()
-
 
 if __name__ == '__main__':
     main()
