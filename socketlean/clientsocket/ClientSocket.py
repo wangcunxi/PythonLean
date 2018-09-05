@@ -46,7 +46,7 @@ class ClientSocket(threading.Thread):
         _log = Log()  # 初始化日志文件
         _log.notetime(1)  # 记录开始时间
         self.login(self._username, self._password)
-        self.receivedata(self.processserverresponse)
+        self.receivedata(False)
         _log.notetime(2)  # 记录接收到数据时间
         _log.print()
         self.close()

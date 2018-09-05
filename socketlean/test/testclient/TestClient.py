@@ -5,9 +5,6 @@
 import sys
 import os
 
-from socketlean.clientsocket.ClientSocket import ClientSocket
-from socketlean.entity.AskNews import AskNews
-from socketlean.entity.Log import Log
 
 projectroot = os.path.abspath('..')
 print(projectroot)
@@ -16,6 +13,7 @@ print(sys.path)
 
 from pip._vendor.distlib.compat import raw_input
 from socketlean.utils import ConstantUtils
+from socketlean.clientsocket.ClientSocket import ClientSocket
 
 def main():
     inputstr = raw_input('please input create client count:')
