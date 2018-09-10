@@ -5,17 +5,16 @@
 # request params entity
 # _newstype:1-login, 2-heardbase
 # @Author  : cunxi.wang
-import time
 
-class News:
-    _newstype = "";
-    _data = "";
-    def __init__(self,newstype):
-        self._newstype=newstype
+class RequestMessage:
+    _message_type = ""
+    _data = ""
+    def __init__(self,message_type):
+        self._message_type=message_type
     def print(self):
-        print(self._newstype,self._data)
+        print(self._message_type,self._data)
 
-class Login():
+class LoginData():
     _username=""
     _password=""
     def __init__(self,username,password):

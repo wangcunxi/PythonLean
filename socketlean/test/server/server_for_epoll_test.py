@@ -10,12 +10,12 @@ print(projectroot)
 sys.path.append(projectroot)
 print(sys.path)
 
-from socketlean.serversocket.ServerSocket import ServerSocket
-from socketlean.utils import ConstantUtils
+from socketlean.server_socket.server_socket_for_epoll import ServerSocket
+from socketlean.utils import constant_utils
 
 # 主入口
 def main():
-    serverSocket = ServerSocket(ConstantUtils.IP, ConstantUtils.PORT)
+    serverSocket = ServerSocket(constant_utils.IP, constant_utils.PORT)
     serverSocket.start()
 
 if __name__ == '__main__':

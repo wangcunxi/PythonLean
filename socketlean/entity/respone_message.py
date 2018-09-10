@@ -4,10 +4,12 @@
 # Python3.5
 # response params entity
 # @Author  : cunxi.wang
-class AskNews:
-    _status=False   # processing request status
-    _message=""     # processing request message
+class ResponseMessage:
+    _status = False  # processing request status
+    _data = ""  # processing request message
+
     def __init__(self):
         pass
+
     def print(self):
-        print(self._status,self._message)
+        print(self._status, self._data)

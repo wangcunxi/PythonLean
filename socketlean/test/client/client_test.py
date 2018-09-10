@@ -12,8 +12,8 @@ sys.path.append(projectroot)
 print(sys.path)
 
 from pip._vendor.distlib.compat import raw_input
-from socketlean.utils import ConstantUtils
-from socketlean.clientsocket.ClientSocket import ClientSocket
+from socketlean.utils import constant_utils
+from socketlean.client_socket.client_socket import ClientSocket
 
 def main():
     inputstr = raw_input('please input create client count:')
@@ -24,7 +24,7 @@ def main():
         inputstr = raw_input('please input number type:')
     initclientcount = int(inputstr)
     while initclientcount > 0:
-        _clientsocket = ClientSocket(ConstantUtils.IP,ConstantUtils.PORT,'wangcunxi'+str(initclientcount),'wangcunxipassword'+str(initclientcount))
+        _clientsocket = ClientSocket(constant_utils.IP, constant_utils.PORT, 'wangcunxi' + str(initclientcount), 'wangcunxipassword' + str(initclientcount))
         _clientsocket.start()
         initclientcount-=1
 

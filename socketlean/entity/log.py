@@ -8,13 +8,13 @@ import time
 
 
 class Log:
-    _begintime = 0;
-    _endtime = 0;
+    _begintime = 0
+    _endtime = 0
 
     def __init__(self):
         pass
 
-    def notetime(self, type):   # 1:note begin time  2:note end time
+    def note_time(self, type):   # 1:note begin time  2:note end time
         t = int(time.time())    # 秒级时间戳
         if (type == 1):
             self._begintime = t
