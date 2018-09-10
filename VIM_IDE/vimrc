@@ -1,0 +1,116 @@
+"不让VIM兼容VI模式
+set nocompatible
+"启动鼠标所有模式
+set mouse=a
+"输入文件时隐藏鼠标
+set mousehide
+
+"设置匹配模式
+set showmatch
+"不备份
+set nobackup
+"不写入备份文件
+set nowritebackup
+"关闭交换文件
+set noswapfile
+"历史存储长度
+set history=500
+"显示标尺
+set ruler
+"显示输入命令
+set showcmd
+    "
+"显示行号
+set number
+"搜素时自动匹配
+set incsearch
+"高亮搜索
+set hlsearch
+"无视大小写
+set ignorecase
+"语法高亮
+syntax on
+"取消自动折行
+set nowrap
+"自动缩进
+set autoindent
+"缩进4空格
+set shiftwidth=4
+"tab由空格表示
+set expandtab
+"tab占4个空格
+set tabstop=4
+"后退可以删除缩进
+set softtabstop=4
+"split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+"Open new split panes to right and bottom
+set splitbelow
+set splitright
+
+"Enable folding
+set foldmethod=indent
+set foldlevel=99
+nnoremap <space> za
+    "
+    "
+filetype off
+
+"set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+"let Vundle manage Vundle
+Plugin 'gmarik/Vundle.vim'
+
+"Add all your plugin here
+Bundle 'taglist.vim'
+let Tlist_Ctags_Cmd='ctags'
+let Tlist_Show_One_File=1
+let Tlist_Exit_OnlyWindow=1
+let Tlist_Use_Right_Window=1
+let Tlist_Auto_Hightlight_Tag=1
+"自动打开taglist
+let Tlist_Auto_Open=1
+"文件索引树
+Plugin 'scrooloose/nerdtree'
+"Setting NerdTree
+map <F3> :NERDTreeMirror<CR>
+map <F3> :NERDTreeToggle<CR>
+let g:NERDTreeWinPos="left"
+let g:NERDTreeWinSize=25
+let g:NERDTreeShowLineNumbers=1
+let g:NERDTreeAutoCenter=1
+let g:neocomplcache_enable_at_startup = 1
+
+Plugin 'vim-scripts/indentpython.vim'
+"语法检查
+Plugin 'vim-syntastic/syntastic'
+"括号自动匹配
+Bundle 'jiangmiao/auto-pairs'
+"显示缩进指示线
+Plugin 'Yggdroot/indentLine'
+"文件模糊匹配查找，在NORMAL模式下，CTRL+P后输入寻找文件
+Bundle 'kien/ctrlp.vim'
+"函数模糊匹配查找
+Bundle 'tacahiroy/ctrlp-funky'
+"在VIM中运行GIT命令
+"Plugin 'tpope/vim-fugitive'
+"状态栏效果
+Bundle 'bling/vim-airline'
+set laststatus=2
+
+Bundle 'yssource/python.vim'
+Bundle 'python_match.vim'
+Bundle 'pythoncomplete'
+
+"All of your plugin must be added before the following line
+call vundle#end()
+filetype plugin indent on
+
+
+
+
