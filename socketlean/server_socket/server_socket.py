@@ -28,25 +28,22 @@ class ServerSocket(threading.Thread):
 
     def run(self):
         self.start_server()
-        self.wait_accept()
 
     def start_server(self):
         self._serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._serversocket.bind((self._ip, self._port))
         self._serversocket.listen(self._max_block_size)
-        print("server socket started")
+        print("server socket started")	
+        self.wait_accept()
 
     def wait_accept(self):
         while self._runaccept:
             print("waiting for client connection")
             client, client_address = self._serversocket.accept()
-            self.start_receive_message_thread(client)
-
-    def start_receive_message_thread(self, client):
-        thread = self._threadpool.popthread()
-        th = thread(target=self.__process_client_message, args=(client,))
-        th.start()
-        print(client, " client is connected")
+            thread = self._threadpool.popthread()
+            th = thread(target=self.__process_client_message, args=(client,))
+            th.start()
+            print(client, " client is connected")
 
     def __process_client_message(self, client):
         data = client.recv(constant_utils.BUFFER_SIZE)
