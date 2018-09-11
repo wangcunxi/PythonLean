@@ -39,17 +39,17 @@ class ClientSocket(threading.Thread):
         _log.note_time(1)  # note send message begin time
         _data = str(_login_data.__dict__)
         print("json obj to string data:", _data)
-        self._socket.send(_data.encode("UTF-8"))
-        self.wait_receive_message_from_server(self.__process_server_response)
-        _log.note_time(2)  # note receiver response message from server
-        _log.print()
-        self.close()
-
-    def wait_receive_message_from_server(self,recive_message_callback):
-        data = self._socket.recv(constant_utils.BUFFER_SIZE)
-        print("receive data:", data)
-        if recive_message_callback:
-            recive_message_callback(data)
+	try:
+            self._socket.send(_data.encode("UTF-8"))
+	    _data = self._socket.recv(constant_utils.BUFFER_SIZE)
+            print("receive data:", _data)
+	    self.__process_server_response(_data)
+            _log.note_time(2)  # note receiver response message from server
+            _log.print()
+	except Exception as e:
+	    print("client exception e:",e)
+        finally:   
+	    self.close()
 
     def __process_server_response(self, data):  # Receive message callback function
         _response_message = ResponseMessage()
