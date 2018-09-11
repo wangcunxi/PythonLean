@@ -31,7 +31,7 @@ class ServerSocket(threading.Thread):
     def run(self):
         self.__start_server()
         self.__proccess_poll_event()
-    def __self_server(self):
+    def __start_server(self):
         self._serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._serversocket.bind((self._ip, self._port))
         self._serversocket.listen(self._max_block_size)
