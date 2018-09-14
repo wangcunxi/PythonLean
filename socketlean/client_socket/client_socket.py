@@ -15,7 +15,7 @@ from socketlean.utils import constant_utils
 class ClientSocket(threading.Thread):
     _ip = ""
     _port = ""
-
+    __log = Log()
     def __init__(self, ip, port, username, password):
         threading.Thread.__init__(self)
         self._ip = ip
@@ -28,38 +28,36 @@ class ClientSocket(threading.Thread):
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create client socket
             self._socket.connect((self._ip, self._port))
             print("connected to server...")
-            self.servicelogic()
+            self.send_messge()
+            self.recv_message()
         except Exception as e:
             print("disconnect to server...")
 
-    def servicelogic(self):
+    def send_messge(self):
         _login_data = self.__get_login_date(self._username, self._password)
         _login_data.print()
-        _log = Log()  # init log
-        _log.note_time(1)  # note send message begin time
         _data = str(_login_data.__dict__)
         print("json obj to string data:", _data)
-	try:
+        try:
+            self.__log.note_time(1)  # note send message begin time
             self._socket.send(_data.encode("UTF-8"))
-	    _data = self._socket.recv(constant_utils.BUFFER_SIZE)
-            print("receive data:", _data)
-	    self.__process_server_response(_data)
-            _log.note_time(2)  # note receiver response message from server
-            _log.print()
-	except Exception as e:
-	    print("client exception e:",e)
-        finally:   
-	    self.close()
-
-    def __process_server_response(self, data):  # Receive message callback function
+        except Exception as e:
+            print("client exception e:",e)
+            return False
+        return True
+    def recv_message(self):
+        _data = self._socket.recv(constant_utils.BUFFER_SIZE)
+        print("receive data:", _data)
+        self.__log.note_time(2)  # note receiver response message from server
+        self.__log.print()
         _response_message = ResponseMessage()
-        _response_message.__dict__ = eval(data.decode(encoding='utf-8'))
+        _response_message.__dict__ = eval(_data.decode(encoding='utf-8'))
         _response_message.print()
-        if _response_message._status:
-            pass
-        else:
-            pass
-
+        # if _response_message._status:
+        #     pass
+        # else:
+        #     pass
+        self.close()
     def __get_login_date(self, username, password):
         _login_message = LoginData(username, password)
         _request_message = RequestMessage(1)
